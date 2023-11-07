@@ -81,4 +81,4 @@ async def to_code(config):
     cg.add(var.set_multiplexer(config[CONF_MULTIPLEXER]))
     cg.add(var.set_gain(config[CONF_GAIN]))
 
-    cg.add(paren.register_sensor(var))
+    cg.add(parent.register_sensor(var))
