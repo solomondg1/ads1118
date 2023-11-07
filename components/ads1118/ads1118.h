@@ -41,7 +41,7 @@ class ADS1118 : public Component,
   void dump_config() override;
   float get_setup_priority() const override { return setup_priority::DATA; }
   /// Helper method to request a measurement from a sensor.
-  float request_measurement(ADS1115Sensor *sensor);
+  float request_measurement(ADS1118Sensor *sensor);
  protected:
   uint16_t config{0};
   std::vector<ADS1118Sensor *> sensors_;
