@@ -29,6 +29,8 @@ enum ADS1118Gain {
   ADS1118_GAIN_0P256 = 0b101,
 };
 
+class ADS1118Sensor;
+
 class ADS1118 : public Component,
                 public spi::SPIDevice<spi::BIT_ORDER_MSB_FIRST, spi::CLOCK_POLARITY_LOW, spi::CLOCK_PHASE_LEADING,
                                       spi::DATA_RATE_1MHZ> {
