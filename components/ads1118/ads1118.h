@@ -32,7 +32,7 @@ enum ADS1118Gain {
 class ADS1118Sensor;
 
 class ADS1118 : public Component,
-                public spi::SPIDevice<spi::BIT_ORDER_MSB_FIRST, spi::CLOCK_POLARITY_LOW, spi::CLOCK_PHASE_LEADING,
+                public spi::SPIDevice<spi::BIT_ORDER_MSB_FIRST, spi::CLOCK_POLARITY_LOW, spi::CLOCK_PHASE_TRAILING,
                                       spi::DATA_RATE_200KHZ> {
  public:
   ADS1118() = default;
