@@ -70,6 +70,7 @@ float ADS1118::request_measurement(ADS1118Sensor *sensor) {
 
   this->enable();
   this->write_byte16(temp_config);
+  this->write_byte16(temp_config);
   this->disable();
 
   // about 1.2 ms with 860 samples per second
@@ -77,8 +78,9 @@ float ADS1118::request_measurement(ADS1118Sensor *sensor) {
 
   uint16_t raw_conversion = 0;
   this->enable();
-  uint8_t adc_first_byte = this->read_byte();
-  uint8_t adc_second_byte = this->read_byte();
+  uint8_t adc_first_byte = this->transfer_byte(static_cast<uint8_t>((temp_config & 0xFF00) >> 8));
+  uint8_t adc_second_byte = this->transfer_byte(static_cast<uint8_t>(temp_config & 0x00FF));
+  this->write_byte16(temp_config);
   this->disable();
   raw_conversion |= adc_first_byte << 8;
   raw_conversion |= adc_second_byte;
