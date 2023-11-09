@@ -97,5 +97,5 @@ async def to_code(config):
         cg.add(parent.register_sensor(var))
     if config[CONF_TYPE] == CONF_TEMPERATURE:
         await sensor.register_sensor(var, config)
-        cg.add(var.set_temperature_mode(True)
+        cg.add(var.set_temperature_mode(True))
         cg.add(parent.register_sensor(var))
