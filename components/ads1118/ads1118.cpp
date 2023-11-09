@@ -100,7 +100,7 @@ float ADS1118::request_measurement(ADS1118Sensor *sensor) {
   auto signed_conversion = static_cast<int16_t>(raw_conversion);
 
   if (sensor->get_temperature_mode()) {
-    return signed_conversion * 0.03125f;
+    return (signed_conversion >> 2) * 0.03125f;
   } else {
     float millivolts;
     float divider = 32768.0f;
