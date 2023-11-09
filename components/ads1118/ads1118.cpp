@@ -69,7 +69,7 @@ float ADS1118::request_measurement(ADS1118Sensor *sensor) {
   temp_config &= 0b1111000111111111;
   temp_config |= (sensor->get_gain() & 0b111) << 9;
 
-  if (this->temperature_mode_) {
+  if (sensor->get_temperature_mode()) {
     // Set temperature sensor mode
     //        0bxxxxxxxxxxx1xxxx
     temp_config |= 0b0000000000010000;
