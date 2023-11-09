@@ -7,6 +7,7 @@ from esphome.const import (
     CONF_RESOLUTION,
     DEVICE_CLASS_VOLTAGE,
     STATE_CLASS_MEASUREMENT,
+    UNIT_CELSIUS,
     UNIT_VOLT,
     CONF_ID,
 )
