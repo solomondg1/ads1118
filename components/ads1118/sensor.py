@@ -52,34 +52,33 @@ CONF_ADS1118_ID = "ads1118_id"
 CONF_ADC = "adc"
 CONF_TEMPERATURE = "temperature"
 
-
-CONFIG_SCHEMA = (
-    cv.Schema(
-        {
-            cv.GenerateID(CONF_ADS1118_ID): cv.use_id(ADS1118),
-            cv.Optional(CONF_ADC): sensor.sensor_schema(
-                ADS1118Sensor,
-                unit_of_measurement=UNIT_VOLT,
-                accuracy_decimals=3,
-                device_class=DEVICE_CLASS_VOLTAGE,
-                state_class=STATE_CLASS_MEASUREMENT,
-            ).extend(
-                {
-                    cv.Optional(CONF_MULTIPLEXER, default="A0_GND"): cv.enum(MUX, upper=True, space="_"),
-                    cv.Optional(CONF_GAIN, default="6.144"): validate_gain,
-                }
-            )
-            .extend(cv.polling_component_schema("60s")),
-            cv.Optional(CONF_TEMPERATURE): sensor.sensor_schema(
-                ADS1118Sensor,
-                unit_of_measurement=UNIT_CELSIUS,
-                accuracy_decimals=2,
-                device_class=DEVICE_CLASS_TEMPERATURE,
-                state_class=STATE_CLASS_MEASUREMENT,
-            )
-            .extend(cv.polling_component_schema("60s")),
-        }
-    )
+CONFIG_SCHEMA = cv.typed_schema(
+    {
+        CONF_ADC: sensor.sensor_schema(
+            ADS1118Sensor,
+            unit_of_measurement=UNIT_VOLT,
+            accuracy_decimals=3,
+            device_class=DEVICE_CLASS_VOLTAGE,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ).extend(
+            {
+                cv.GenerateID(CONF_ADS1118_ID): cv.use_id(ADS1118),
+                cv.Required(CONF_MULTIPLEXER): cv.enum(MUX, upper=True, space="_"),
+                cv.Required(CONF_GAIN): validate_gain,
+            }
+        ).extend(cv.polling_component_schema("60s")),
+        CONF_TEMPERATURE: sensor.sensor_schema(
+            ADS1118Sensor,
+            unit_of_measurement=UNIT_CELSIUS,
+            accuracy_decimals=2,
+            device_class=DEVICE_CLASS_TEMPERATURE,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ).extend(
+            {
+                cv.GenerateID(CONF_ADS1118_ID): cv.use_id(ADS1118),
+            }
+        ).extend(cv.polling_component_schema("60s")),            
+    }    
 )
 
 
@@ -91,12 +90,12 @@ async def to_code(config):
     )
     await cg.register_component(var, config)
     
-    if adc := config.get(CONF_ADC):
-        await sensor.register_sensor(var, adc)
+    if config[CONF_TYPE] == CONF_ADC:
+        await sensor.register_sensor(var, config)
         cg.add(var.set_multiplexer(config[CONF_MULTIPLEXER]))
         cg.add(var.set_gain(config[CONF_GAIN]))
         cg.add(parent.register_sensor(var))
-    if temperature := config.get(CONF_TEMPERATURE):
-        await sensor.register_sensor(var, temperature)
+    if config[CONF_TYPE] == CONF_TEMPERATURE:
+        await sensor.register_sensor(var, config)
         cg.add(var.set_temperature_mode(True)
         cg.add(parent.register_sensor(var))
