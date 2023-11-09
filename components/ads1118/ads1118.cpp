@@ -7,7 +7,6 @@ namespace ads1118 {
 static const char *const TAG = "ads1118";
 static const uint8_t ADS1118_DATA_RATE_860_SPS = 0b111;
 
-
 void ADS1118::setup() {
   ESP_LOGCONFIG(TAG, "Setting up ads1118");
   this->spi_setup();
@@ -49,7 +48,7 @@ void ADS1118::setup() {
 void ADS1118::dump_config() {
   ESP_LOGCONFIG(TAG, "ADS1118:");
   LOG_PIN("  CS Pin:", this->cs_);
-  
+
   for (auto *sensor : this->sensors_) {
     LOG_SENSOR("  ", "Sensor", sensor);
     ESP_LOGCONFIG(TAG, "    Multiplexer: %u", sensor->get_multiplexer());
@@ -129,8 +128,6 @@ float ADS1118::request_measurement(ADS1118Sensor *sensor) {
 
     return millivolts / 1e3f;
   }
-
-  
 }
 
 float ADS1118Sensor::sample() { return this->parent_->request_measurement(this); }
@@ -142,5 +139,5 @@ void ADS1118Sensor::update() {
   }
 }
 
-}  // namespace ADS1118
+}  // namespace ads1118
 }  // namespace esphome

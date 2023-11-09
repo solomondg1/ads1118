@@ -4,7 +4,6 @@ from esphome.components import sensor, voltage_sampler
 from esphome.const import (
     CONF_GAIN,
     CONF_MULTIPLEXER,
-    CONF_RESOLUTION,
     DEVICE_CLASS_VOLTAGE,
     DEVICE_CLASS_TEMPERATURE,
     STATE_CLASS_MEASUREMENT,
@@ -39,6 +38,7 @@ GAIN = {
     "0.256": ADS1118Gain.ADS1118_GAIN_0P256,
 }
 
+
 def validate_gain(value):
     if isinstance(value, float):
         value = f"{value:0.03f}"
@@ -52,53 +52,55 @@ ADS1118Sensor = ads1118_ns.class_(
     "ADS1118Sensor", sensor.Sensor, cg.PollingComponent, voltage_sampler.VoltageSampler
 )
 CONF_ADS1118_ID = "ads1118_id"
-CONF_ADC = "adc"
-CONF_TEMPERATURE = "temperature"
+TYPE_ADC = "adc"
+TYPE_TEMPERATURE = "temperature"
 
 CONFIG_SCHEMA = cv.typed_schema(
     {
-        CONF_ADC: sensor.sensor_schema(
+        TYPE_ADC: sensor.sensor_schema(
             ADS1118Sensor,
             unit_of_measurement=UNIT_VOLT,
             accuracy_decimals=3,
             device_class=DEVICE_CLASS_VOLTAGE,
             state_class=STATE_CLASS_MEASUREMENT,
-        ).extend(
+        )
+        .extend(
             {
                 cv.GenerateID(CONF_ADS1118_ID): cv.use_id(ADS1118),
                 cv.Required(CONF_MULTIPLEXER): cv.enum(MUX, upper=True, space="_"),
                 cv.Required(CONF_GAIN): validate_gain,
             }
-        ).extend(cv.polling_component_schema("60s")),
-        CONF_TEMPERATURE: sensor.sensor_schema(
+        )
+        .extend(cv.polling_component_schema("60s")),
+        TYPE_TEMPERATURE: sensor.sensor_schema(
             ADS1118Sensor,
             unit_of_measurement=UNIT_CELSIUS,
             accuracy_decimals=2,
             device_class=DEVICE_CLASS_TEMPERATURE,
             state_class=STATE_CLASS_MEASUREMENT,
-        ).extend(
+        )
+        .extend(
             {
                 cv.GenerateID(CONF_ADS1118_ID): cv.use_id(ADS1118),
             }
-        ).extend(cv.polling_component_schema("60s")),            
-    }    
+        )
+        .extend(cv.polling_component_schema("60s")),
+    },
+    default_type=TYPE_ADC,
 )
 
 
 async def to_code(config):
     parent = await cg.get_variable(config[CONF_ADS1118_ID])
-    var = cg.new_Pvariable(
-        config[CONF_ID],
-        parent
-    )
+    var = cg.new_Pvariable(config[CONF_ID], parent)
     await cg.register_component(var, config)
-    
-    if config[CONF_TYPE] == CONF_ADC:
+
+    if config[CONF_TYPE] == TYPE_ADC:
         await sensor.register_sensor(var, config)
         cg.add(var.set_multiplexer(config[CONF_MULTIPLEXER]))
         cg.add(var.set_gain(config[CONF_GAIN]))
         cg.add(parent.register_sensor(var))
-    if config[CONF_TYPE] == CONF_TEMPERATURE:
+    if config[CONF_TYPE] == TYPE_TEMPERATURE:
         await sensor.register_sensor(var, config)
         cg.add(var.set_temperature_mode(True))
         cg.add(parent.register_sensor(var))
