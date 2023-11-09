@@ -33,7 +33,7 @@ class ADS1118Sensor;
 
 class ADS1118 : public Component,
                 public spi::SPIDevice<spi::BIT_ORDER_MSB_FIRST, spi::CLOCK_POLARITY_LOW, spi::CLOCK_PHASE_TRAILING,
-                                      spi::DATA_RATE_200KHZ> {
+                                      spi::DATA_RATE_1MHZ> {
  public:
   ADS1118() = default;
   void register_sensor(ADS1118Sensor *obj) { this->sensors_.push_back(obj); }
