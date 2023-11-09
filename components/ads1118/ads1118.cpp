@@ -15,7 +15,7 @@ void ADS1118::setup() {
   this->config = 0;
   // Setup multiplexer
   //        0bx000xxxxxxxxxxxx
-  this->config |= ADS1118_MULTIPLEXER_P0_N1 << 12;
+  this->config |= ADS1118_MULTIPLEXER_P0_NG << 12;
 
   // Setup Gain
   //        0bxxxx000xxxxxxxxx
@@ -68,6 +68,16 @@ float ADS1118::request_measurement(ADS1118Sensor *sensor) {
   //        0bxxxxBBBxxxxxxxxx
   temp_config &= 0b1111000111111111;
   temp_config |= (sensor->get_gain() & 0b111) << 9;
+
+  if (this->temperature_mode_) {
+    // Set temperature sensor mode
+    //        0bxxxxxxxxxxx1xxxx
+    temp_config |= 0b0000000000010000;
+  } else {
+    // Set ADC mode
+    //        0bxxxxxxxxxxx0xxxx
+    temp_config &= 0b1111111111101111;
+  }
 
   // Start conversion
   temp_config |= 0b1000000000000000;

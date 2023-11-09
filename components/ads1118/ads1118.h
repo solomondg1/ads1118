@@ -54,14 +54,17 @@ class ADS1118Sensor : public PollingComponent, public sensor::Sensor, public vol
   void update() override;
   void set_multiplexer(ADS1118Multiplexer multiplexer) { multiplexer_ = multiplexer; }
   void set_gain(ADS1118Gain gain) { gain_ = gain; }
+  void set_temperature_mode(bool temp) { temperature_mode_ = temp; }
   uint8_t get_multiplexer() const { return multiplexer_; }
   uint8_t get_gain() const { return gain_; }
+  bool get_temperature_mode() const { return temperature_mode_; }
   float sample() override;
 
  protected:
   ADS1118 *parent_;
   ADS1118Multiplexer multiplexer_;
   ADS1118Gain gain_;
+  bool temperature_mode_;
 };
 
 }  // namespace ads1118

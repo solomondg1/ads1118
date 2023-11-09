@@ -49,6 +49,7 @@ ADS1118Sensor = ads1118_ns.class_(
     "ADS1118Sensor", sensor.Sensor, cg.PollingComponent, voltage_sampler.VoltageSampler
 )
 CONF_ADS1118_ID = "ads1118_id"
+CONF_TEMPERATURE_MODE = "temperature_mode"
 
 CONFIG_SCHEMA = (
     sensor.sensor_schema(
@@ -61,8 +62,9 @@ CONFIG_SCHEMA = (
     .extend(
         {
             cv.GenerateID(CONF_ADS1118_ID): cv.use_id(ADS1118),
-            cv.Required(CONF_MULTIPLEXER): cv.enum(MUX, upper=True, space="_"),
-            cv.Required(CONF_GAIN): validate_gain
+            cv.Optional(CONF_MULTIPLEXER, default="A0_GND"): cv.enum(MUX, upper=True, space="_"),
+            cv.Optional(CONF_GAIN, default="6.144"): validate_gain,
+            cv.Optional(CONF_TEMPERATURE_MODE, default=False): cv.boolean
         }
     )
     .extend(cv.polling_component_schema("60s"))
@@ -80,5 +82,6 @@ async def to_code(config):
 
     cg.add(var.set_multiplexer(config[CONF_MULTIPLEXER]))
     cg.add(var.set_gain(config[CONF_GAIN]))
+    cg.add(var.set_temperature_mode(config[CONF_TEMPERATURE_MODE]))
 
     cg.add(parent.register_sensor(var))
