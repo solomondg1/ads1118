@@ -99,32 +99,38 @@ float ADS1118::request_measurement(ADS1118Sensor *sensor) {
 
   auto signed_conversion = static_cast<int16_t>(raw_conversion);
 
-  float millivolts;
-  float divider = 32768.0f;
-  switch (sensor->get_gain()) {
-    case ADS1118_GAIN_6P144:
-      millivolts = (signed_conversion * 6144) / divider;
-      break;
-    case ADS1118_GAIN_4P096:
-      millivolts = (signed_conversion * 4096) / divider;
-      break;
-    case ADS1118_GAIN_2P048:
-      millivolts = (signed_conversion * 2048) / divider;
-      break;
-    case ADS1118_GAIN_1P024:
-      millivolts = (signed_conversion * 1024) / divider;
-      break;
-    case ADS1118_GAIN_0P512:
-      millivolts = (signed_conversion * 512) / divider;
-      break;
-    case ADS1118_GAIN_0P256:
-      millivolts = (signed_conversion * 256) / divider;
-      break;
-    default:
-      millivolts = NAN;
+  if (sensor->get_temperature_mode()) {
+    return signed_conversion * 0.03125f
+  } else {
+    float millivolts;
+    float divider = 32768.0f;
+    switch (sensor->get_gain()) {
+      case ADS1118_GAIN_6P144:
+        millivolts = (signed_conversion * 6144) / divider;
+        break;
+      case ADS1118_GAIN_4P096:
+        millivolts = (signed_conversion * 4096) / divider;
+        break;
+      case ADS1118_GAIN_2P048:
+        millivolts = (signed_conversion * 2048) / divider;
+        break;
+      case ADS1118_GAIN_1P024:
+        millivolts = (signed_conversion * 1024) / divider;
+        break;
+      case ADS1118_GAIN_0P512:
+        millivolts = (signed_conversion * 512) / divider;
+        break;
+      case ADS1118_GAIN_0P256:
+        millivolts = (signed_conversion * 256) / divider;
+        break;
+      default:
+        millivolts = NAN;
+    }
+
+    return millivolts / 1e3f;
   }
 
-  return millivolts / 1e3f;
+  
 }
 
 float ADS1118Sensor::sample() { return this->parent_->request_measurement(this); }
