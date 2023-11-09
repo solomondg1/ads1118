@@ -11,6 +11,7 @@ from esphome.const import (
     UNIT_CELSIUS,
     UNIT_VOLT,
     CONF_ID,
+    CONF_TYPE,
 )
 from . import ads1118_ns, ADS1118
 
