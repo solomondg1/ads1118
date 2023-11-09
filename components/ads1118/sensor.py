@@ -91,13 +91,12 @@ async def to_code(config):
     )
     await cg.register_component(var, config)
     
-
     if adc := config.get(CONF_ADC):
         await sensor.register_sensor(var, adc)
         cg.add(var.set_multiplexer(config[CONF_MULTIPLEXER]))
         cg.add(var.set_gain(config[CONF_GAIN]))
+        cg.add(parent.register_sensor(var))
     if temperature := config.get(CONF_TEMPERATURE):
         await sensor.register_sensor(var, temperature)
         cg.add(var.set_temperature_mode(True)
-
-    cg.add(parent.register_sensor(var))
+        cg.add(parent.register_sensor(var))
