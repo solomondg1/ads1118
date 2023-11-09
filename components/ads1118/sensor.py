@@ -49,25 +49,36 @@ ADS1118Sensor = ads1118_ns.class_(
     "ADS1118Sensor", sensor.Sensor, cg.PollingComponent, voltage_sampler.VoltageSampler
 )
 CONF_ADS1118_ID = "ads1118_id"
-CONF_TEMPERATURE_MODE = "temperature_mode"
+CONF_ADC = "adc"
+CONF_TEMPERATURE = "temperature"
+
 
 CONFIG_SCHEMA = (
-    sensor.sensor_schema(
-        ADS1118Sensor,
-        unit_of_measurement=UNIT_VOLT,
-        accuracy_decimals=3,
-        device_class=DEVICE_CLASS_VOLTAGE,
-        state_class=STATE_CLASS_MEASUREMENT,
-    )
-    .extend(
+    cv.Schema(
         {
             cv.GenerateID(CONF_ADS1118_ID): cv.use_id(ADS1118),
-            cv.Optional(CONF_MULTIPLEXER, default="A0_GND"): cv.enum(MUX, upper=True, space="_"),
-            cv.Optional(CONF_GAIN, default="6.144"): validate_gain,
-            cv.Optional(CONF_TEMPERATURE_MODE, default=False): cv.boolean
+            cv.Optional(CONF_ADC): sensor.sensor_schema(
+                ADS1118Sensor,
+                unit_of_measurement=UNIT_VOLT,
+                accuracy_decimals=3,
+                device_class=DEVICE_CLASS_VOLTAGE,
+                state_class=STATE_CLASS_MEASUREMENT,
+            ).extend(
+                {
+                    cv.Optional(CONF_MULTIPLEXER, default="A0_GND"): cv.enum(MUX, upper=True, space="_"),
+                    cv.Optional(CONF_GAIN, default="6.144"): validate_gain,
+                }
+            )
+            .extend(cv.polling_component_schema("60s")),
+            cv.Optional(CONF_TEMPERATURE): sensor.sensor_schema(
+                unit_of_measurement=UNIT_CELSIUS,
+                accuracy_decimals=2,
+                device_class=DEVICE_CLASS_TEMPERATURE,
+                state_class=STATE_CLASS_MEASUREMENT,
+            )
+            .extend(cv.polling_component_schema("60s")),
         }
     )
-    .extend(cv.polling_component_schema("60s"))
 )
 
 
@@ -80,8 +91,10 @@ async def to_code(config):
     await cg.register_component(var, config)
     await sensor.register_sensor(var, config)
 
-    cg.add(var.set_multiplexer(config[CONF_MULTIPLEXER]))
-    cg.add(var.set_gain(config[CONF_GAIN]))
-    cg.add(var.set_temperature_mode(config[CONF_TEMPERATURE_MODE]))
+    if config.get(CONF_ADC):
+        cg.add(var.set_multiplexer(config[CONF_MULTIPLEXER]))
+        cg.add(var.set_gain(config[CONF_GAIN]))
+    if config.get(CONF_TEMPERATURE):
+        cg.add(var.set_temperature_mode(True)
 
     cg.add(parent.register_sensor(var))
