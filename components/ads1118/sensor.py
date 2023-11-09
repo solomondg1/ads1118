@@ -71,6 +71,7 @@ CONFIG_SCHEMA = (
             )
             .extend(cv.polling_component_schema("60s")),
             cv.Optional(CONF_TEMPERATURE): sensor.sensor_schema(
+                ADS1118Sensor,
                 unit_of_measurement=UNIT_CELSIUS,
                 accuracy_decimals=2,
                 device_class=DEVICE_CLASS_TEMPERATURE,
