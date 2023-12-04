@@ -90,7 +90,7 @@ float ADS1118::request_measurement(ADS1118Sensor *sensor) {
   this->disable();
 
   // about 1.2 ms with 860 samples per second
-  delay(2);
+  delay(5);
 
   uint16_t raw_conversion = 0;
   this->enable();
