@@ -4,7 +4,7 @@ from esphome.components import sensor, voltage_sampler
 from esphome.const import (
     CONF_GAIN,
     CONF_MULTIPLEXER,
-    CONF_DATARATE,
+    CONF_DATA_RATE,
     DEVICE_CLASS_VOLTAGE,
     DEVICE_CLASS_TEMPERATURE,
     STATE_CLASS_MEASUREMENT,
@@ -82,7 +82,7 @@ CONFIG_SCHEMA = cv.typed_schema(
                 cv.GenerateID(CONF_ADS1118_ID): cv.use_id(ADS1118),
                 cv.Required(CONF_MULTIPLEXER): cv.enum(MUX, upper=True, space="_"),
                 cv.Required(CONF_GAIN): validate_gain,
-                cv.Optional(CONF_DATARATE, default="860"): cv.enum(DR),
+                cv.Optional(CONF_DATA_RATE, default="860"): cv.enum(DR),
             }
         )
         .extend(cv.polling_component_schema("60s")),
@@ -113,7 +113,7 @@ async def to_code(config):
         await sensor.register_sensor(var, config)
         cg.add(var.set_multiplexer(config[CONF_MULTIPLEXER]))
         cg.add(var.set_gain(config[CONF_GAIN]))
-        cg.add(var.set_datarate(config[CONF_DATARATE]))
+        cg.add(var.set_datarate(config[CONF_DATA_RATE]))
         cg.add(parent.register_sensor(var))
     if config[CONF_TYPE] == TYPE_TEMPERATURE:
         await sensor.register_sensor(var, config)
