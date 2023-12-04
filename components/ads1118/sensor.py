@@ -4,6 +4,7 @@ from esphome.components import sensor, voltage_sampler
 from esphome.const import (
     CONF_GAIN,
     CONF_MULTIPLEXER,
+    CONF_DATARATE,
     DEVICE_CLASS_VOLTAGE,
     DEVICE_CLASS_TEMPERATURE,
     STATE_CLASS_MEASUREMENT,
@@ -26,6 +27,18 @@ MUX = {
     "A1_GND": ADS1118Multiplexer.ADS1118_MULTIPLEXER_P1_NG,
     "A2_GND": ADS1118Multiplexer.ADS1118_MULTIPLEXER_P2_NG,
     "A3_GND": ADS1118Multiplexer.ADS1118_MULTIPLEXER_P3_NG,
+}
+
+ADS1118DataRate = ads1118_ns.enum("ADS1118DataRate")
+DR = {
+    "8": ADS1118DataRate.ADS1118_DATA_RATE_8_SPS,
+    "16": ADS1118DataRate.ADS1118_DATA_RATE_16_SPS,
+    "32": ADS1118DataRate.ADS1118_DATA_RATE_32_SPS,
+    "64": ADS1118DataRate.ADS1118_DATA_RATE_64_SPS,
+    "128": ADS1118DataRate.ADS1118_DATA_RATE_128_SPS,
+    "250": ADS1118DataRate.ADS1118_DATA_RATE_250_SPS,
+    "475": ADS1118DataRate.ADS1118_DATA_RATE_475_SPS,
+    "860": ADS1118DataRate.ADS1118_DATA_RATE_860_SPS,
 }
 
 ADS1118Gain = ads1118_ns.enum("ADS1118Gain")
@@ -69,6 +82,7 @@ CONFIG_SCHEMA = cv.typed_schema(
                 cv.GenerateID(CONF_ADS1118_ID): cv.use_id(ADS1118),
                 cv.Required(CONF_MULTIPLEXER): cv.enum(MUX, upper=True, space="_"),
                 cv.Required(CONF_GAIN): validate_gain,
+                cv.Optional(CONF_DATARATE, default="860"): cv.enum(DR),
             }
         )
         .extend(cv.polling_component_schema("60s")),
@@ -99,6 +113,7 @@ async def to_code(config):
         await sensor.register_sensor(var, config)
         cg.add(var.set_multiplexer(config[CONF_MULTIPLEXER]))
         cg.add(var.set_gain(config[CONF_GAIN]))
+        cg.add(var.set_datarate(config[CONF_DATARATE]))
         cg.add(parent.register_sensor(var))
     if config[CONF_TYPE] == TYPE_TEMPERATURE:
         await sensor.register_sensor(var, config)

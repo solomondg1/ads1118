@@ -20,6 +20,17 @@ enum ADS1118Multiplexer {
   ADS1118_MULTIPLEXER_P3_NG = 0b111,
 };
 
+enum ADS1118DataRate {
+  ADS1118_DATA_RATE_8_SPS = 0b000,
+  ADS1118_DATA_RATE_16_SPS = 0b001,
+  ADS1118_DATA_RATE_32_SPS = 0b010,
+  ADS1118_DATA_RATE_64_SPS = 0b011,
+  ADS1118_DATA_RATE_128_SPS = 0b100,
+  ADS1118_DATA_RATE_250_SPS = 0b101,
+  ADS1118_DATA_RATE_475_SPS = 0b110,
+  ADS1118_DATA_RATE_860_SPS = 0b111,
+};
+
 enum ADS1118Gain {
   ADS1118_GAIN_6P144 = 0b000,
   ADS1118_GAIN_4P096 = 0b001,
@@ -55,9 +66,11 @@ class ADS1118Sensor : public PollingComponent, public sensor::Sensor, public vol
   void update() override;
   void set_multiplexer(ADS1118Multiplexer multiplexer) { multiplexer_ = multiplexer; }
   void set_gain(ADS1118Gain gain) { gain_ = gain; }
+  void set_datarate(ADS1118DataRate dr) { datarate_ = dr; }
   void set_temperature_mode(bool temp) { temperature_mode_ = temp; }
   uint8_t get_multiplexer() const { return multiplexer_; }
   uint8_t get_gain() const { return gain_; }
+  uint8_t get_datarate() const { return datarate_; }
   bool get_temperature_mode() const { return temperature_mode_; }
   float sample() override;
 
@@ -65,6 +78,7 @@ class ADS1118Sensor : public PollingComponent, public sensor::Sensor, public vol
   ADS1118 *parent_;
   ADS1118Multiplexer multiplexer_;
   ADS1118Gain gain_;
+  ADS1118DataRate datarate_;
   bool temperature_mode_;
 };
 

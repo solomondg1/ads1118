@@ -5,7 +5,6 @@ namespace esphome {
 namespace ads1118 {
 
 static const char *const TAG = "ads1118";
-static const uint8_t ADS1118_DATA_RATE_860_SPS = 0b111;
 
 void ADS1118::setup() {
   ESP_LOGCONFIG(TAG, "Setting up ads1118");
@@ -25,7 +24,7 @@ void ADS1118::setup() {
   this->config |= 0b0000000100000000;
 
   // Set data rate - 860 samples per second (we're in singleshot mode)
-  //        0bxxxxxxxx100xxxxx
+  //        0bxxxxxxxx111xxxxx
   this->config |= ADS1118_DATA_RATE_860_SPS << 5;
 
   // Set temperature sensor mode - ADC
@@ -59,14 +58,19 @@ void ADS1118::dump_config() {
 float ADS1118::request_measurement(ADS1118Sensor *sensor) {
   uint16_t temp_config = this->config;
   // Multiplexer
-  //        0bxBBBxxxxxxxxxxxx
+  //             0bxBBBxxxxxxxxxxxx
   temp_config &= 0b1000111111111111;
   temp_config |= (sensor->get_multiplexer() & 0b111) << 12;
 
   // Gain
-  //        0bxxxxBBBxxxxxxxxx
+  //             0bxxxxBBBxxxxxxxxx
   temp_config &= 0b1111000111111111;
   temp_config |= (sensor->get_gain() & 0b111) << 9;
+
+  // Data Rate
+  //             0bxxxxxxxxBBBxxxxx
+  temp_config &= 0b1111111100011111;
+  temp_config |= (sensor->get_datarate() & 0b111) << 5;
 
   if (sensor->get_temperature_mode()) {
     // Set temperature sensor mode
